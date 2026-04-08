@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "adyghe-latin-utils"
 version = "0.1.0"
-description = "Python utilities for Adyghe (Western Circassian) language: Cyrillic↔Latin transliteration and number-to-words conversion"
+description = "Python utilities for Adyghe (Western Circassian) language: Cyrillic↔Latin alphabet conversion and number-to-words conversion"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -15,7 +15,7 @@ authors = [
 keywords = [
     "adyghe",
     "circassian",
-    "transliteration",
+    "alphabet-conversion",
     "cyrillic",
     "latin",
     "number-to-words",

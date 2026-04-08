@@ -1,6 +1,7 @@
 """Adyghe (Western Circassian) language utilities.
 
-Provides Cyrillic↔Latin transliteration and number-to-words conversion
+Provides conversion between the official Cyrillic and Latin Adyghe alphabets,
+and number-to-words conversion
 for the Adyghe language (ISO 639-3: ady).
 """
 

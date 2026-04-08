@@ -4,18 +4,18 @@
 [![Python](https://img.shields.io/pypi/pyversions/adyghe-latin-utils)](https://pypi.org/project/adyghe-latin-utils/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Python utilities for the **Adyghe** (Western Circassian) language — **Cyrillic↔Latin script transliteration** and **number-to-words conversion**.
+Python utilities for the **Adyghe** (Western Circassian) language — **Cyrillic↔Latin alphabet conversion** and **number-to-words conversion**.
 
 ## About Adyghe
 
 [Adyghe](https://en.wikipedia.org/wiki/Adyghe_language) (адыгабзэ / adıǵabze) is a Northwest Caucasian language spoken by approximately 600,000 people, primarily in the Republic of Adygea (Russia), Turkey, Jordan, Syria, and diaspora communities worldwide. Its ISO 639-3 language code is **ady**.
 
-Adyghe is traditionally written in the Cyrillic script (since 1938). This package provides tools for converting between the Cyrillic-based Adyghe alphabet and a Latin-based orthography, as well as converting numbers into Adyghe words.
+Adyghe is traditionally written in the Cyrillic script (since 1938). A Latin-based Adyghe alphabet also exists as an official writing system. This package provides tools for converting between these two official alphabets, as well as converting numbers into Adyghe words.
 
 ## Features
 
-- **Cyrillic → Latin transliteration** — context-aware conversion handling compound characters (гу, гъ, дж, дз, жь, кӀ, ку, шъ, etc.)
-- **Latin → Cyrillic transliteration** — reverse conversion with vowel insertion and palochka (Ӏ) rules
+- **Cyrillic → Latin conversion** — context-aware conversion between the official Cyrillic and Latin Adyghe alphabets, handling compound characters (гу, гъ, дж, дз, жь, кӀ, ку, шъ, etc.)
+- **Latin → Cyrillic conversion** — reverse conversion with vowel insertion and palochka (Ӏ) rules
 - **Number to words** — converts integers (0 to 10¹⁵) into Adyghe words
 - **Numbers in text** — detects and converts 12 types of numeric patterns in mixed text:
   phone numbers, currencies ($), percentages (%), ranges (7-12), decimals (5.11),
@@ -39,7 +39,7 @@ uv add adyghe-latin-utils
 
 ## Quick Start
 
-### Script Transliteration
+### Alphabet Conversion
 
 ```python
 from adyghe_latin_utils import AdigaCharacterUtils
