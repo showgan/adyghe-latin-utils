@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "adyghe-latin-utils"
+version = "0.1.0"
+description = "Python utilities for Adyghe (Western Circassian) language: Cyrillic↔Latin transliteration and number-to-words conversion"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Haroon Showgan", email = "haroon.showgan@gmail.com" },
+]
+keywords = [
+    "adyghe",
+    "circassian",
+    "transliteration",
+    "cyrillic",
+    "latin",
+    "number-to-words",
+    "western-circassian",
+    "ady",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Russian",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Internationalization",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+adyghe-char-convert = "adyghe_latin_utils.character_utils:main"
+adyghe-num-convert = "adyghe_latin_utils.number_utils:main"
+
+[project.urls]
+Homepage = "https://github.com/showgan/adyghe-latin-utils"
+Repository = "https://github.com/showgan/adyghe-latin-utils"
+Issues = "https://github.com/showgan/adyghe-latin-utils/issues"
