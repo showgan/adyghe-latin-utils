@@ -63,12 +63,14 @@ utils.is_cyrillic_adyghe("ǵupşıśé")      # → False
 ### Number to Words
 
 This library uses the **modern decimal (base-10) system** for number-to-words conversion.
-Adyghe traditionally uses a vigesimal (base-20) counting system similar to French,
-but modern usage has shifted towards a simpler decimal system:
+Adyghe traditionally uses a **vigesimal (base-20)** counting system similar to French
+(e.g., French *soixante-douze* = 60 + 12 for "72"). In the traditional Adyghe system,
+"72" is *ṫoćişıre ṫure* (roughly "three-twenties-and-twelve"). Modern usage has shifted
+towards a simpler **decimal (base-10)** system:
 
-| Number | Modern (this library) | Traditional (not supported) |
-|--------|-----------------------|-----------------------------|
-| 72     | blıć ṫu              | ṫoćişıre ṫure               |
+| Number | Modern decimal (this library) | Traditional vigesimal (not supported) |
+|--------|-------------------------------|---------------------------------------|
+| 72     | blıć ṫu (7-tens and 2)       | ṫoćişıre ṫure (3×20 + 12)            |
 
 ```python
 from adyghe_latin_utils import AdigaNumberUtils
