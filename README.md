@@ -16,7 +16,7 @@ Adyghe is traditionally written in the Cyrillic script (since 1938). A Latin-bas
 
 - **Cyrillic → Latin conversion** — context-aware conversion between the official Cyrillic and Latin Adyghe alphabets, handling compound characters (гу, гъ, дж, дз, жь, кӀ, ку, шъ, etc.)
 - **Latin → Cyrillic conversion** — reverse conversion with vowel insertion and palochka (Ӏ) rules
-- **Number to words** — converts integers (0 to 10¹⁵) into Adyghe words
+- **Number to words** — converts integers (0 to 10¹⁵) into Adyghe words using the **modern decimal (base-10) system**
 - **Numbers in text** — detects and converts 12 types of numeric patterns in mixed text:
   phone numbers, currencies ($), percentages (%), ranges (7-12), decimals (5.11),
   Roman numerals (IV), signed numbers (+14, -32), and more
@@ -61,6 +61,14 @@ utils.is_cyrillic_adyghe("ǵupşıśé")      # → False
 ```
 
 ### Number to Words
+
+This library uses the **modern decimal (base-10) system** for number-to-words conversion.
+Adyghe traditionally uses a vigesimal (base-20) counting system similar to French,
+but modern usage has shifted towards a simpler decimal system:
+
+| Number | Modern (this library) | Traditional (not supported) |
+|--------|-----------------------|-----------------------------|
+| 72     | blıć ṫu              | ṫoćişıre ṫure               |
 
 ```python
 from adyghe_latin_utils import AdigaNumberUtils
