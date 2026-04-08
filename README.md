@@ -4,6 +4,8 @@
 [![Python](https://img.shields.io/pypi/pyversions/adyghe-latin-utils)](https://pypi.org/project/adyghe-latin-utils/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+🌐 **English** | [Türkçe](README.tr.md) | [Русский](README.ru.md) | [עברית](README.he.md)
+
 Python utilities for the **Adyghe** (Western Circassian) language — **Cyrillic↔Latin alphabet conversion** and **number-to-words conversion**.
 
 ## About Adyghe
