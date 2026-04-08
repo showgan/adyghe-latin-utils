@@ -199,12 +199,16 @@ adyghe-num-convert -i input.txt -o output.txt
 git clone https://github.com/showgan/adyghe-latin-utils.git
 cd adyghe-latin-utils
 
-# הקמת סביבת פיתוח
+# יצירה והפעלה של סביבה וירטואלית
 uv venv
+source .venv/bin/activate        # bash/zsh
+# source .venv/bin/activate.csh  # tcsh
+
+# התקנת החבילה במצב עריכה עם תלויות פיתוח
 uv pip install -e ".[dev]"
 
 # הרצת בדיקות
-uv run pytest tests/ -v
+pytest tests/ -v
 ```
 
 ## רישיון

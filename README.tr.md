@@ -198,12 +198,16 @@ adyghe-num-convert -i girdi.txt -o cikti.txt
 git clone https://github.com/showgan/adyghe-latin-utils.git
 cd adyghe-latin-utils
 
-# Geliştirme ortamını kurun
+# Sanal ortam oluşturun ve etkinleştirin
 uv venv
+source .venv/bin/activate        # bash/zsh
+# source .venv/bin/activate.csh  # tcsh
+
+# Paketi düzenlenebilir modda ve geliştirme bağımlılıklarıyla kurun
 uv pip install -e ".[dev]"
 
 # Testleri çalıştırın
-uv run pytest tests/ -v
+pytest tests/ -v
 ```
 
 ## Lisans

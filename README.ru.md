@@ -199,12 +199,16 @@ adyghe-num-convert -i input.txt -o output.txt
 git clone https://github.com/showgan/adyghe-latin-utils.git
 cd adyghe-latin-utils
 
-# Настройка среды разработки
+# Создание и активация виртуального окружения
 uv venv
+source .venv/bin/activate        # bash/zsh
+# source .venv/bin/activate.csh  # tcsh
+
+# Установка пакета в режиме разработки с зависимостями
 uv pip install -e ".[dev]"
 
 # Запуск тестов
-uv run pytest tests/ -v
+pytest tests/ -v
 ```
 
 ## Лицензия
