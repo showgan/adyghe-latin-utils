@@ -9,4 +9,4 @@ from adyghe_latin_utils.character_utils import AdigaCharacterUtils
 from adyghe_latin_utils.number_utils import AdigaNumberUtils
 
 __all__ = ["AdigaCharacterUtils", "AdigaNumberUtils"]
-__version__ = "0.1.2"
+__version__ = "0.1.3"

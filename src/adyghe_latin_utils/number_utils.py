@@ -62,13 +62,13 @@ class AdigaNumberUtils:
         r'((?:' + _NUM + r')\s*-\s*(?:' + _NUM + r')[%+]?)'
         r'|'
         # Group 8: Decimal or multi-dot number with optional trailing symbol
-        r'((?:' + _NUM + r')(?:\.(?:' + _NUM + r'))+[%+\-]?)'
+        r'((?:' + _NUM + r')(?:\.(?:' + _NUM + r'))+(?:[%+]|-(?=\s|$))?)'
         r'|'
         # Group 9: Slash-separated numbers: 2010/11
         r'((?:' + _NUM + r')(?:/(?:' + _NUM + r'))+)'
         r'|'
         # Group 10: Plain number with symbol postfix: 4%, 804+, 65-
-        r'((?:' + _NUM + r')[%+\-])'
+        r'((?:' + _NUM + r')(?:[%+]|-(?=\s|$)))'
         r'|'
         # Group 11: Roman numerals with optional dot (2+ chars, or 1 char with dot)
         r'(?<![a-zA-Z])([IVXLCDM]{2,}\.?|[IVXLCDM]\.)(?![a-zA-Z])'
