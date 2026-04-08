@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/adyghe-latin-utils)](https://pypi.org/project/adyghe-latin-utils/)
 [![רישיון: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-🌐 [English](README.md) | [Türkçe](README.tr.md) | [Русский](README.ru.md) | **עברית**
+🌐 [English](https://github.com/showgan/adyghe-latin-utils/blob/main/README.md) | [Türkçe](https://github.com/showgan/adyghe-latin-utils/blob/main/README.tr.md) | [Русский](https://github.com/showgan/adyghe-latin-utils/blob/main/README.ru.md) | **עברית**
 
 כלי עזר ב-Python לשפה ה**אדיגית** (צ'רקסית מערבית) — **המרה בין אלפבית קירילי ולטיני** ו**המרת מספרים למילים**.
 

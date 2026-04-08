@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/adyghe-latin-utils)](https://pypi.org/project/adyghe-latin-utils/)
 [![Lisans: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-🌐 [English](README.md) | **Türkçe** | [Русский](README.ru.md) | [עברית](README.he.md)
+🌐 [English](https://github.com/showgan/adyghe-latin-utils/blob/main/README.md) | **Türkçe** | [Русский](https://github.com/showgan/adyghe-latin-utils/blob/main/README.ru.md) | [עברית](https://github.com/showgan/adyghe-latin-utils/blob/main/README.he.md)
 
 **Adıge** (Batı Çerkes) dili için Python yardımcı araçları — **Kiril↔Latin alfabe dönüşümü** ve **sayıdan kelimeye dönüşüm**.
 

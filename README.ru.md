@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/adyghe-latin-utils)](https://pypi.org/project/adyghe-latin-utils/)
 [![Лицензия: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-🌐 [English](README.md) | [Türkçe](README.tr.md) | **Русский** | [עברית](README.he.md)
+🌐 [English](https://github.com/showgan/adyghe-latin-utils/blob/main/README.md) | [Türkçe](https://github.com/showgan/adyghe-latin-utils/blob/main/README.tr.md) | **Русский** | [עברית](https://github.com/showgan/adyghe-latin-utils/blob/main/README.he.md)
 
 Утилиты на Python для **адыгейского** (западночеркесского) языка — **конвертация между кириллическим и латинским алфавитами** и **преобразование чисел в слова**.
 
