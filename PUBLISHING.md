@@ -114,7 +114,7 @@ Create a temporary venv to test the package in isolation:
 uv venv /tmp/test-adyghe --python 3.10
 source /tmp/test-adyghe/bin/activate        # bash/zsh
 # source /tmp/test-adyghe/bin/activate.csh  # tcsh
-pip install adyghe-latin-utils
+uv pip install adyghe-latin-utils
 ```
 
 Then verify:
@@ -132,6 +132,24 @@ deactivate
 rm -rf /tmp/test-adyghe
 ```
 
+## 8. Tag the Release on GitHub
+
+Once the package is live on PyPI, tag the release commit and push the tag so
+GitHub has a permanent marker for the published version. Use an annotated tag
+with a `vX.Y.Z` name matching `pyproject.toml` / `__version__`:
+
+```bash
+git tag -a vX.Y.Z -m "Release X.Y.Z"
+git push origin vX.Y.Z
+```
+
+If you ever need to remove a tag that was pushed by mistake:
+
+```bash
+git tag -d vX.Y.Z                      # delete locally
+git push origin :refs/tags/vX.Y.Z      # delete on GitHub
+```
+
 ## Quick Reference (Copy-Paste)
 
 Full publish workflow in one block:
@@ -145,4 +163,5 @@ uv run pytest tests/ -v
 git add -A && git commit -m "Bump version to X.Y.Z" && git push
 uv publish --publish-url https://test.pypi.org/legacy/   # TestPyPI
 uv publish                                                 # PyPI
+git tag -a vX.Y.Z -m "Release X.Y.Z" && git push origin vX.Y.Z
 ```
