@@ -127,8 +127,12 @@ adyghe-char-convert -i girdi.txt -o cikti.txt -d c2l
 # Latin'den Kiril'e (dosyadan standart çıktıya)
 adyghe-char-convert -i girdi.txt -d l2c
 
+# Komut satırında doğrudan bir dize dönüştürme
+adyghe-char-convert -t "гупшысэ" -d c2l
+
 # Seçenekler:
-#   -i, --input      Girdi dosyası yolu (zorunlu)
+#   -t, --text       Girdi metin dizesi (-i ile birlikte kullanılamaz)
+#   -i, --input      Girdi dosyası yolu (-t ile birlikte kullanılamaz)
 #   -o, --output     Çıktı dosyası yolu (varsayılan: stdout)
 #   -d, --direction  c2l (Kiril→Latin) veya l2c (Latin→Kiril) (zorunlu)
 ```
@@ -164,6 +168,7 @@ adyghe-num-convert -i girdi.txt -o cikti.txt
 | `capitalize(text, is_latin, is_cyrillic) -> str` | İlk karakteri büyük harfe dönüştürür |
 | `special_chars_to_english_chars(text: str) -> str` | Aksan işaretli Latin karakterlerini ASCII'ye dönüştürür |
 | `cyrillic_extra_chars_to_basic_chars(text: str) -> str` | Kiril karakter varyantlarını normalleştirir |
+| `sanitize_latin_text(text: str) -> str` | Latin Adıge alfabesi dışındaki karakterleri kaldırır, boşlukları sadeleştirir ve gereksiz noktalamayı normalleştirir |
 
 ### `AdigaNumberUtils`
 
@@ -190,6 +195,27 @@ adyghe-num-convert -i girdi.txt -o cikti.txt
 | Sembol son eki | `4%`, `804+` | Sayı dönüştürülür, sembol korunur |
 | Roma rakamı | `III`, `IV` | Arap rakamına, ardından kelimeye dönüştürülür |
 | Düz sayı | `42`, `1,000,000` | Tam sayı dönüşümü |
+
+## Kararlılık
+
+Bu proje [Semantik Sürümleme](https://semver.org/spec/v2.0.0.html) kurallarını
+takip eder. `1.0.0` sürümünden itibaren aşağıdakiler genel, kararlı API olarak
+kabul edilir:
+
+- `adyghe_latin_utils` paketinden yeniden dışa aktarılan `AdigaCharacterUtils`
+  ve `AdigaNumberUtils` sınıfları
+  ([`src/adyghe_latin_utils/__init__.py`](src/adyghe_latin_utils/__init__.py)
+  içindeki `__all__` listesine bakın).
+- `adyghe-char-convert` ve `adyghe-num-convert` komut satırı araçları ile
+  belgelenen bayrakları.
+
+Yukarıdakilerde yapılacak geriye dönük uyumsuz değişiklikler ana sürüm artışı
+gerektirir. Burada listelenmeyen her şey (dahili modüller, yardımcı
+fonksiyonlar, `_` ile başlayan özel öznitelikler ve daha önce ele alınmamış
+sınır durumlarında tam dönüşüm çıktısı) dahili kabul edilir ve ikincil (minor)
+veya yama (patch) sürümlerinde değişebilir. Kiril ve Latin alfabeleri
+arasındaki bilinen kayıplı dönüşümler
+[`LIMITATIONS.md`](LIMITATIONS.md) dosyasında belgelenmiştir.
 
 ## Geliştirme
 

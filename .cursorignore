@@ -1,0 +1,5 @@
+# Cursor ignore patterns for repository indexing/context.
+# Ported from `.github/.copilotignore`.
+
+# Un-ignore scratch work directories so Cursor can index them.
+!**/0scratch*/**

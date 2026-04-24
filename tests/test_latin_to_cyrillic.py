@@ -13,9 +13,12 @@ Covers:
 - Roundtrip consistency (cyrillic_to_latin -> latin_to_cyrillic)
 - Edge cases (empty, None, whitespace, punctuation prefix)
 """
+from pathlib import Path
+
 import pytest
 
 from adyghe_latin_utils.character_utils import AdigaCharacterUtils
+from tests.regression_comparator import compare_lines_with_report, read_lines
 
 
 @pytest.fixture(scope="module")
@@ -225,11 +228,51 @@ class TestCapitalization:
 
     def test_special_char_capitalized(self, utils):
         result = utils.latin_to_cyrillic('Ḣan')
-        assert result == 'ХЪан'
+        assert result == 'Хъан'
 
     def test_lowercase_word(self, utils):
         result = utils.latin_to_cyrillic('selam')
         assert result == 'сэлам'
+
+
+class TestDigraphCapitalization:
+    """Regression coverage for round-trip class 4.
+
+    When a word starts with a capitalized Latin letter (or compound) that
+    maps to a multi-letter Cyrillic digraph, only the first Cyrillic letter
+    should be uppercased (e.g. `Cıri` -> `Джыри`, not `ДЖыри`). If the
+    Latin input continues in uppercase, the digraph is fully uppercased
+    (e.g. `KAXEM` -> `КЪАХЭМ`).
+    """
+
+    @pytest.mark.parametrize("latin,expected_cyrillic", [
+        ("Cıri", "Джыри"),
+        ("Kaxem", "Къахэм"),
+        ("Ğogur", "Гъогур"),
+        ("Ham", "Хьам"),
+        ("Ḣan", "Хъан"),
+        ("Ĺıtén", "Лъытен"),
+        ("Źuz", "Дзуз"),
+        ("Şüase", "Шъуасэ"),
+    ])
+    def test_word_initial_digraph_title_case(
+        self, utils, latin, expected_cyrillic
+    ):
+        result = utils.latin_to_cyrillic(latin)
+        assert result == expected_cyrillic, \
+            f"{latin!r}: expected {expected_cyrillic!r}, got {result!r}"
+
+    @pytest.mark.parametrize("latin,expected_cyrillic", [
+        ("KAXEM", "КЪАХЭМ"),
+        ("ĞOGUR", "ГЪОГУР"),
+        ("HAM", "ХЬАМ"),
+    ])
+    def test_all_caps_digraph_preserved(
+        self, utils, latin, expected_cyrillic
+    ):
+        result = utils.latin_to_cyrillic(latin)
+        assert result == expected_cyrillic, \
+            f"{latin!r}: expected {expected_cyrillic!r}, got {result!r}"
 
 
 # ============================================================
@@ -266,6 +309,30 @@ class TestRoundtrip:
         back = utils.latin_to_cyrillic(latin)
         assert back == cyrillic, \
             f"Roundtrip failed: '{cyrillic}' -> '{latin}' -> '{back}'"
+
+
+class TestKnownConversionBugs:
+    """Regression coverage for known tricky conversion sequences."""
+
+    def test_bug_yioa_to_i_palochka_ua(self, utils):
+        assert utils.latin_to_cyrillic('yioáğ') == 'иӀуагъ'
+
+
+class TestCorpusRegression:
+    """Line-by-line regression tests against prepared golden corpora."""
+
+    def test_regression_corpus_lines_match_cyrillic_golden(self, utils):
+        tests_dir = Path(__file__).resolve().parent
+        input_lines = read_lines(tests_dir / 'regression_texts_lat.txt')
+        expected_lines = read_lines(tests_dir / 'regression_texts_cyr_golden.txt')
+        converted_lines = [utils.latin_to_cyrillic(line) for line in input_lines]
+        comparison = compare_lines_with_report(
+            expected_lines=expected_lines,
+            actual_lines=converted_lines,
+            report_path=tests_dir / 'regression_reports' / 'latin_to_cyrillic_report.txt',
+            title='Latin to Cyrillic regression comparison',
+        )
+        assert comparison.matches, comparison.fail_message()
 
 
 # ============================================================

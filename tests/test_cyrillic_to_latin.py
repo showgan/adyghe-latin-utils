@@ -13,10 +13,12 @@ Cyrillic-to-Latin conversion. It covers:
 - Words from the fineweb corpus (for regression after user review)
 """
 import os
+from pathlib import Path
 
 import pytest
 
 from adyghe_latin_utils.character_utils import AdigaCharacterUtils
+from tests.regression_comparator import compare_lines_with_report, read_lines
 
 
 @pytest.fixture(scope="module")
@@ -39,6 +41,22 @@ class TestKnownBugs:
     def test_bug2_palochka_prefix(self, utils):
         # IофшIэнхэр: word-initial I should not produce apostrophe
         assert utils.cyrillic_to_latin('IофшIэнхэр') == "ofş'enxer"
+
+    def test_bug_word_ending_i_palochka(self, utils):
+        # иӀ should not keep extra ı before apostrophe
+        assert utils.cyrillic_to_latin('иӀ') == "yi'"
+
+    def test_bug_word_ending_ya_palochka(self, utils):
+        # яӀ should emit apostrophe, not raw palochka
+        assert utils.cyrillic_to_latin('яӀ') == "ya'"
+
+    def test_bug_i_palochka_ua_sequence(self, utils):
+        # иӀуа at word start should remain explicit as yioá, not collapse to yi'wa
+        assert utils.cyrillic_to_latin('иӀуагъ') == 'yioáğ'
+
+    def test_bug_l2c_noninitial_ioa_sequence(self, utils):
+        # Non-word-initial ioá should keep palochka: ...иӀуа...
+        assert utils.latin_to_cyrillic('kıwioáğ') == 'къыуиӀуагъ'
 
 
 # ============================================================
@@ -143,6 +161,8 @@ class TestTwoCharCompounds:
         ('Ӏэ', 'e'),
         ('Ӏа', 'aá'),
         ('Ӏо', "'o"),
+        ('иӀ', "i'"),
+        ('яӀ', "ya'"),
     ])
     def test_palochka_two_char_mid_word(self, utils, cyrillic, expected_latin):
         result = utils.cyrillic_to_latin('н' + cyrillic + 'н')
@@ -555,3 +575,16 @@ class TestCorpusRegression:
                              ids=[p[0] for p in _CORPUS_DATA])
     def test_corpus_word(self, utils, cyrillic, expected_latin):
         assert utils.cyrillic_to_latin(cyrillic) == expected_latin
+
+    def test_regression_corpus_lines_match_latin_golden(self, utils):
+        tests_dir = Path(__file__).resolve().parent
+        input_lines = read_lines(tests_dir / 'regression_texts_cyr.txt')
+        expected_lines = read_lines(tests_dir / 'regression_texts_lat_golden.txt')
+        converted_lines = [utils.cyrillic_to_latin(line) for line in input_lines]
+        comparison = compare_lines_with_report(
+            expected_lines=expected_lines,
+            actual_lines=converted_lines,
+            report_path=tests_dir / 'regression_reports' / 'cyrillic_to_latin_report.txt',
+            title='Cyrillic to Latin regression comparison',
+        )
+        assert comparison.matches, comparison.fail_message()

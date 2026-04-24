@@ -1,0 +1,6 @@
+Latin to Cyrillic regression comparison
+expected_lines=1800
+actual_lines=1800
+diff_count=0
+
+No differences found.

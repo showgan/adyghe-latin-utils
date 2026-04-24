@@ -128,8 +128,12 @@ adyghe-char-convert -i input.txt -o output.txt -d c2l
 # מלטינית לקירילית (קובץ ל-stdout)
 adyghe-char-convert -i input.txt -d l2c
 
+# המרת מחרוזת שמועברת ישירות בשורת הפקודה
+adyghe-char-convert -t "гупшысэ" -d c2l
+
 # אפשרויות:
-#   -i, --input      נתיב לקובץ קלט (חובה)
+#   -t, --text       מחרוזת טקסט קלט (לא ניתן לשלב עם i-)
+#   -i, --input      נתיב לקובץ קלט (לא ניתן לשלב עם t-)
 #   -o, --output     נתיב לקובץ פלט (ברירת מחדל: stdout)
 #   -d, --direction  c2l (קירילית→לטינית) או l2c (לטינית→קירילית) (חובה)
 ```
@@ -165,6 +169,7 @@ adyghe-num-convert -i input.txt -o output.txt
 | `capitalize(text, is_latin, is_cyrillic) -> str` | אות ראשונה גדולה |
 | `special_chars_to_english_chars(text: str) -> str` | פישוט תווים לטיניים מנוקדים ל-ASCII |
 | `cyrillic_extra_chars_to_basic_chars(text: str) -> str` | נרמול גרסאות תווים קיריליים |
+| `sanitize_latin_text(text: str) -> str` | הסרת תווים שאינם באלפבית האדיגי הלטיני, כיווץ רווחים ונרמול סימני פיסוק חריגים |
 
 ### `AdigaNumberUtils`
 
@@ -191,6 +196,23 @@ adyghe-num-convert -i input.txt -o output.txt
 | סמל-סיומת | `4%`, `804+` | המספר מומר, הסמל נשמר |
 | ספרה רומית | `III`, `IV` | מומר לערבי ואז למילים |
 | מספר רגיל | `42`, `1,000,000` | המרת מספר מלאה |
+
+## יציבות
+
+פרויקט זה פועל לפי [ניהול גרסאות סמנטי](https://semver.org/spec/v2.0.0.html).
+החל מגרסה `1.0.0`, המרכיבים הבאים נחשבים ל-API הציבורי והיציב:
+
+- המחלקות `AdigaCharacterUtils` ו-`AdigaNumberUtils` המיוצאות מחדש מהחבילה
+  `adyghe_latin_utils` (ראו `__all__` בקובץ
+  [`src/adyghe_latin_utils/__init__.py`](src/adyghe_latin_utils/__init__.py)).
+- כלי שורת הפקודה `adyghe-char-convert` ו-`adyghe-num-convert` והדגלים המתועדים
+  שלהם.
+
+שינויים שוברי-תאימות בכל אחד מהפריטים שלמעלה ידרשו העלאת גרסה ראשית (major).
+כל דבר שאינו מופיע כאן (מודולים פנימיים, פונקציות עזר, תכונות פרטיות עם קידומת
+`_` ופלט ההמרה המדויק במקרי קצה שלא טופלו בעבר) נחשב פנימי ועשוי להשתנות
+בגרסת משנה (minor) או בגרסת טלאי (patch). המרות עם אובדן מידע ידועות בין
+האלפביתים הקירילי והלטיני מתועדות בקובץ [`LIMITATIONS.md`](LIMITATIONS.md).
 
 ## פיתוח
 

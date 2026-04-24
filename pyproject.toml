@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "adyghe-latin-utils"
-version = "0.1.3"
+version = "1.0.0"
 description = "Python utilities for Adyghe (Western Circassian) language: Cyrillic↔Latin alphabet conversion and number-to-words conversion"
 readme = "README.md"
 license = "MIT"
@@ -23,7 +23,7 @@ keywords = [
     "ady",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",

@@ -7,6 +7,8 @@ import time
 
 
 class AdigaCharacterUtils:
+    RECOGNIZED_LATIN_CHARS_PATTERN = re.compile(r"[^a-záçćéǵğḣıḱĺöṕşśšṫüź\',.;:\?\! ]")
+
     def __init__(self):
         # Cyrillic Allowed Chars:
         self._cyrillic_allowed = "АБВГДЕЖЗИЙКЛМНОӀПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя?,.;:-()[]{}_\"'`"
@@ -125,6 +127,7 @@ class AdigaCharacterUtils:
             'щ': 'ş',
             'ы': 'ı',
             'ь': '',
+            'Ӏ': "'",
             'э': 'e',
             'ю': 'yu',
             'я': 'ya'
@@ -194,8 +197,6 @@ class AdigaCharacterUtils:
             'ий': 'yiy',
             'йи': 'yiy',
             'иа': 'iya',
-            # 'иӀ': "yiı'",
-            # 'иӀ': "yi'",
             'йу': 'ywı',
             'оо': 'wewe',
             'ой': 'wey',
@@ -345,7 +346,10 @@ class AdigaCharacterUtils:
             'иIу': "iu",
             'иiо': "io",
             'иӀо': "io",
-            'иIо': "io"
+            'иIо': "io",
+            'эӀе': "eé",
+            'эiе': "eé",
+            'эIе': "eé"
         }
 
         # NOTE the upper case and lower case of the Cyrillic "I" looks the same
@@ -411,10 +415,6 @@ class AdigaCharacterUtils:
             "^Ӏа": "aá",
             "^ио": "yiwe",
             "^иа": "ya",
-            "^иI": "yiı'",
-            "^иӏ": "yiı'",
-            "^иi": "yiı'",
-            "^иӀ": "yiı'",
             "^уу": "wıw",
             "^уэ": "we",
             "^уа": "wa",
@@ -437,6 +437,14 @@ class AdigaCharacterUtils:
             "^ӏае": "aye",
             "^iае": "aye",
             "^Ӏае": "aye"
+        }
+
+        # Cyrillic to Latin regexps, prefixes, 4 chars:
+        self._cyrillic_to_latin_regexp_prefixes_4_chars = {
+            "^иIуа": "yioá",
+            "^иӏуа": "yioá",
+            "^иiуа": "yioá",
+            "^иӀуа": "yioá",
         }
 
         #######################################
@@ -515,6 +523,7 @@ class AdigaCharacterUtils:
 
         # Latin to Cyrillic regexps, 3 chars:
         self._latin_to_cyrillic_regexp_3_chars = {
+            "ioá": "иӀуа",
         }
 
         # Latin to Cyrillic regexps, 4 chars:
@@ -544,6 +553,11 @@ class AdigaCharacterUtils:
         self._latin_to_cyrillic_regexp_prefixes_3_chars = {
         }
 
+        # Latin to Cyrillic regexps, prefixes, 4 chars:
+        self._latin_to_cyrillic_regexp_prefixes_4_chars = {
+            "^yioá": "иӀуа"
+        }
+
         # Cyrillic Adyghe alphabet characters (letters only, no punctuation)
         self._cyrillic_adyghe_letters = "АБВГДЕЖЗИЙКЛМНОӀПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя"
 
@@ -551,6 +565,8 @@ class AdigaCharacterUtils:
         # Cyrillic-to-Latin: prefix tables (keys have ^ stripped for startswith)
         self._c2l_pfx3 = [(k.lstrip('^'), v) for k, v in
                           self._cyrillic_to_latin_regexp_prefixes_3_chars.items()]
+        self._c2l_pfx4 = [(k.lstrip('^'), v) for k, v in
+                          self._cyrillic_to_latin_regexp_prefixes_4_chars.items()]
         self._c2l_pfx2 = [(k.lstrip('^'), v) for k, v in
                           self._cyrillic_to_latin_regexp_prefixes_2_chars.items()]
         # Prefix 1-char: split plain vs regex (only "^у[^эаеи]" needs regex)
@@ -578,6 +594,8 @@ class AdigaCharacterUtils:
         # Latin-to-Cyrillic: all plain, no regex keys
         self._l2c_pfx3 = [(k.lstrip('^'), v) for k, v in
                           self._latin_to_cyrillic_regexp_prefixes_3_chars.items()]
+        self._l2c_pfx4 = [(k.lstrip('^'), v) for k, v in
+                          self._latin_to_cyrillic_regexp_prefixes_4_chars.items()]
         self._l2c_pfx2 = [(k.lstrip('^'), v) for k, v in
                           self._latin_to_cyrillic_regexp_prefixes_2_chars.items()]
         self._l2c_pfx1 = [(k.lstrip('^'), v) for k, v in
@@ -626,6 +644,27 @@ class AdigaCharacterUtils:
         if first_char == self.to_lowercase(first_char, is_latin, is_cyrillic) or first_char == "I":
             is_upper = False
         return is_upper
+
+    def sanitize_latin_text(self, text: str) -> str:
+        if text is None or text == '':
+            return text
+        length = len(text)
+        if length == 0:
+            return text
+
+        text = text.replace('\t', ' ')
+        new_text = ''
+        for i in range(length):
+            current_char = text[i]
+            if self.RECOGNIZED_LATIN_CHARS_PATTERN.match(current_char) is not None:
+                continue
+            new_text = new_text + current_char
+
+        new_text = re.sub(r' +', ' ', new_text).strip()
+        new_text = new_text.replace('"', ' ')
+        new_text = new_text.replace(':', '.')
+        new_text = new_text.replace(';', '.')
+        return new_text
 
     def to_lowercase(self, text: str, is_latin: bool, is_cyrillic: bool) -> str:
         if text is None or text == '':
@@ -737,6 +776,15 @@ class AdigaCharacterUtils:
         length = len(text)
         for i in range(length):
             current_char = text[i]
+            # Special handling for digit '1': only treat as palochka substitute
+            # when the preceding char is Cyrillic. Otherwise keep it as digit.
+            if current_char == '1':
+                prev_char = text[i - 1] if i > 0 else ''
+                if '\u0400' <= prev_char <= '\u04FF':
+                    converted_parts.append('Ӏ')
+                else:
+                    converted_parts.append('1')
+                continue
             converted_parts.append(self._cyrillic_extra_char_to_basic_char(current_char))
         return ''.join(converted_parts)
 
@@ -776,21 +824,41 @@ class AdigaCharacterUtils:
             tokens_and_spaces.append(current_token)
 
         result_parts = []
-        # TODO currently handles only words that start with '(',
-        #  need to support any non-alphabet chars of any length as a prefix
+        # Strip any run of leading non-alphabetic chars (quotes, parens, etc.)
+        # so word-start prefix rules still apply to tokens like `"ИIэм` or `(уи...`.
+        # The hyphen `-` is kept out of the strip set so hyphenated compounds
+        # (e.g. `II-рэ`) still split below.
+        leading_punct = set('("\'«»\u201c\u201d\u2018\u2019[{')
         for token in tokens_and_spaces:
             removed_prefix = ''
-            if token[0] in '(-' and len(token) > 1:
-                removed_prefix = token[0]
+            while len(token) > 1 and token[0] in leading_punct:
+                removed_prefix += token[0]
+                token = token[1:]
+            # Legacy single-char strip for '-' (keeps pre-existing behavior for
+            # tokens like `-рэ` where the '-' is purely decorative).
+            if token and token[0] == '-' and len(token) > 1:
+                removed_prefix += token[0]
                 token = token[1:]
             # Split on hyphens so each part gets word-start prefix handling
             if '-' in token:
                 parts = token.split('-')
-                converted_parts = [self._cyrillic_to_latin_single_word(part) for part in parts]
+                converted_parts = [self._convert_cyrillic_part(part) for part in parts]
                 result_parts.append(removed_prefix + '-'.join(converted_parts))
             else:
-                result_parts.append(removed_prefix + self._cyrillic_to_latin_single_word(token))
+                result_parts.append(removed_prefix + self._convert_cyrillic_part(token))
         return ''.join(result_parts)
+
+    # Roman numerals written with Latin capitals. Tokens consisting entirely of
+    # these chars are preserved as-is instead of being treated as palochka
+    # substitutes.
+    _ROMAN_NUMERAL_CHARS = frozenset('IVXLCDM')
+
+    def _convert_cyrillic_part(self, part: str) -> str:
+        """Convert a single hyphen-delimited sub-token, preserving Roman
+        numerals that would otherwise be misread as palochkas."""
+        if part and all(c in self._ROMAN_NUMERAL_CHARS for c in part):
+            return part
+        return self._cyrillic_to_latin_single_word(part)
 
     def _cyrillic_to_latin_single_word(self, word: str) -> str:
         if word is None or word == '':
@@ -816,6 +884,23 @@ class AdigaCharacterUtils:
             next_char_is_upper = self._original_is_uppercase(next_char, False, True)
             matched = False
             if i == 0:
+                # 4 char prefixes
+                for key, value in self._c2l_pfx4:
+                    if current_char.startswith(key):
+                        i = i + 4
+                        matched = True
+                        converted_char = value
+                        if is_upper:
+                            if next_char_is_upper:
+                                converted_char = self.to_uppercase(converted_char, True, False)
+                            else:
+                                converted_char = self.capitalize(converted_char, True, False)
+                        new_word_parts.append(converted_char)
+                        break
+                if i >= len_cyrillic:
+                    break
+                if matched:
+                    continue
                 # 3 char prefixes
                 for key, value in self._c2l_pfx3:
                     if current_char.startswith(key):
@@ -1061,9 +1146,33 @@ class AdigaCharacterUtils:
             current_char = word[i:]
             current_char_orig = orig_word[i:]
             is_upper = self._original_is_uppercase(current_char_orig, True, False)
+            # Look at the next Latin char so we can distinguish word-initial
+            # capitalization (e.g. `Cıri` -> `Джыри`) from an all-caps run
+            # (e.g. `CIRI` -> `ДЖИРИ`). Mirrors the C2L logic.
+            next_char_orig = orig_word[i + 1:] if (i + 1) < len_latin else ''
+            next_char_is_upper = self._original_is_uppercase(
+                next_char_orig, True, False
+            )
             matched = False
             if i == 0:
                 # TODO remove all unneeded hash maps (3-chars and maybe others)
+                # 4 char prefixes
+                for key, value in self._l2c_pfx4:
+                    if current_char.startswith(key):
+                        i = i + 4
+                        matched = True
+                        converted_char = value
+                        if is_upper:
+                            if next_char_is_upper:
+                                converted_char = self.to_uppercase(converted_char, False, True)
+                            else:
+                                converted_char = self.capitalize(converted_char, False, True)
+                        new_word_parts.append(converted_char)
+                        break
+                if i >= len_latin:
+                    break
+                if matched:
+                    continue
                 # 3 char prefixes
                 for key, value in self._l2c_pfx3:
                     if current_char.startswith(key):
@@ -1071,8 +1180,10 @@ class AdigaCharacterUtils:
                         matched = True
                         converted_char = value
                         if is_upper:
-                            # converted_char = self.capitalize(converted_char, False, True)
-                            converted_char = self.to_uppercase(converted_char, False, True)
+                            if next_char_is_upper:
+                                converted_char = self.to_uppercase(converted_char, False, True)
+                            else:
+                                converted_char = self.capitalize(converted_char, False, True)
                         new_word_parts.append(converted_char)
                         break
                 if i >= len_latin:
@@ -1087,8 +1198,10 @@ class AdigaCharacterUtils:
                         matched = True
                         converted_char = value
                         if is_upper:
-                            # converted_char = self.capitalize(converted_char, False, True)
-                            converted_char = self.to_uppercase(converted_char, False, True)
+                            if next_char_is_upper:
+                                converted_char = self.to_uppercase(converted_char, False, True)
+                            else:
+                                converted_char = self.capitalize(converted_char, False, True)
                         new_word_parts.append(converted_char)
                         break
                 if i >= len_latin:
@@ -1102,8 +1215,10 @@ class AdigaCharacterUtils:
                         matched = True
                         converted_char = value
                         if is_upper:
-                            # converted_char = self.capitalize(converted_char, False, True)
-                            converted_char = self.to_uppercase(converted_char, False, True)
+                            if next_char_is_upper:
+                                converted_char = self.to_uppercase(converted_char, False, True)
+                            else:
+                                converted_char = self.capitalize(converted_char, False, True)
                         new_word_parts.append(converted_char)
                         break
                 if i >= len_latin:
@@ -1117,8 +1232,10 @@ class AdigaCharacterUtils:
                     matched = True
                     converted_char = value
                     if is_upper:
-                        # converted_char = self.capitalize(converted_char, False, True)
-                        converted_char = self.to_uppercase(converted_char, False, True)
+                        if next_char_is_upper:
+                            converted_char = self.to_uppercase(converted_char, False, True)
+                        else:
+                            converted_char = self.capitalize(converted_char, False, True)
                     new_word_parts.append(converted_char)
                     break
             if i >= len_latin:
@@ -1132,8 +1249,10 @@ class AdigaCharacterUtils:
                     matched = True
                     converted_char = value
                     if is_upper:
-                        # converted_char = self.capitalize(converted_char, False, True)
-                        converted_char = self.to_uppercase(converted_char, False, True)
+                        if next_char_is_upper:
+                            converted_char = self.to_uppercase(converted_char, False, True)
+                        else:
+                            converted_char = self.capitalize(converted_char, False, True)
                     new_word_parts.append(converted_char)
                     break
             if i >= len_latin:
@@ -1147,8 +1266,10 @@ class AdigaCharacterUtils:
                     matched = True
                     converted_char = value
                     if is_upper:
-                        # converted_char = self.capitalize(converted_char, False, True)
-                        converted_char = self.to_uppercase(converted_char, False, True)
+                        if next_char_is_upper:
+                            converted_char = self.to_uppercase(converted_char, False, True)
+                        else:
+                            converted_char = self.capitalize(converted_char, False, True)
                     new_word_parts.append(converted_char)
                     break
             if i >= len_latin:
@@ -1186,10 +1307,14 @@ class AdigaCharacterUtils:
                         converted_char = 'Ӏу'
                     elif current_char == 'o' and prev_char in "aoueiı":
                         converted_char = 'Ӏо'
+                    elif current_char == 'y' and prev_char in "aoueiı":
+                        converted_char = 'й'
                 i = i + 1
                 if is_upper:
-                    # converted_char = self.capitalize(converted_char, False, True)
-                    converted_char = self.to_uppercase(converted_char, False, True)
+                    if next_char_is_upper:
+                        converted_char = self.to_uppercase(converted_char, False, True)
+                    else:
+                        converted_char = self.capitalize(converted_char, False, True)
                 new_word_parts.append(converted_char)
             if i >= len_latin:
                 break
@@ -1235,8 +1360,11 @@ def main():
     parser = argparse.ArgumentParser(
         description='Convert text between Cyrillic and Latin Adyghe scripts.'
     )
-    parser.add_argument('-i', '--input', required=True,
-                        help='Path to the input text file')
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument('-i', '--input',
+                             help='Path to the input text file')
+    input_group.add_argument('-t', '--text',
+                             help='Input text string to convert')
     parser.add_argument('-o', '--output', default=None,
                         help='Path to the output text file (default: stdout)')
     parser.add_argument('-d', '--direction', required=True,
@@ -1247,80 +1375,107 @@ def main():
 
     direction_label = 'Cyrillic → Latin' if args.direction == 'c2l' \
         else 'Latin → Cyrillic'
+    char_utils = AdigaCharacterUtils()
+    convert = char_utils.cyrillic_to_latin if args.direction == 'c2l' \
+        else char_utils.latin_to_cyrillic
 
-    with open(args.input, 'r', encoding='utf-8') as infile:
-        lines = infile.readlines()
+    if args.input:
+        with open(args.input, 'r', encoding='utf-8') as infile:
+            lines = infile.readlines()
 
-    total_lines = len(lines)
-    total_chars = sum(len(line) for line in lines)
-    num_workers = min(os.cpu_count() or 1, max(1, total_lines // 100))
+        total_lines = len(lines)
+        total_chars = sum(len(line) for line in lines)
+        num_workers = min(os.cpu_count() or 1, max(1, total_lines // 100))
+        source_label = args.input
 
-    print(f'Direction:  {direction_label}', file=sys.stderr)
-    print(f'Input file: {args.input}', file=sys.stderr)
-    print(f'Output:     {args.output if args.output else "<stdout>"}',
-          file=sys.stderr)
-    print(f'Lines:      {total_lines}', file=sys.stderr)
-    print(f'Characters: {total_chars}', file=sys.stderr)
-    print(f'Workers:    {num_workers}', file=sys.stderr)
-    print(file=sys.stderr)
+        print(f'Direction:  {direction_label}', file=sys.stderr)
+        print(f'Input:      {source_label}', file=sys.stderr)
+        print(f'Output:     {args.output if args.output else "<stdout>"}',
+              file=sys.stderr)
+        print(f'Lines:      {total_lines}', file=sys.stderr)
+        print(f'Characters: {total_chars}', file=sys.stderr)
+        print(f'Workers:    {num_workers}', file=sys.stderr)
+        print(file=sys.stderr)
 
-    start_time = time.time()
-    bar_width = 40
+        start_time = time.time()
+        bar_width = 40
 
-    if num_workers <= 1:
-        # Single-process path: small files or single-core machines
-        char_utils = AdigaCharacterUtils()
-        convert = char_utils.cyrillic_to_latin if args.direction == 'c2l' \
-            else char_utils.latin_to_cyrillic
-        converted_lines = []
-        for idx, line in enumerate(lines, 1):
-            converted_lines.append(convert(line))
-            progress = idx / total_lines
-            filled = int(bar_width * progress)
-            bar = '█' * filled + '░' * (bar_width - filled)
-            print(f'\r  [{bar}] {idx}/{total_lines} lines ({progress:.0%})',
-                  end='', file=sys.stderr)
-    else:
-        # Multi-process path: split lines into batches, one per worker
-        batch_size = (total_lines + num_workers - 1) // num_workers
-        batches = []
-        for start in range(0, total_lines, batch_size):
-            batches.append(
-                (args.direction, lines[start:start + batch_size])
-            )
-
-        converted_lines = []
-        done_lines = 0
-        with multiprocessing.Pool(processes=num_workers) as pool:
-            for batch_result in pool.imap(_convert_batch, batches):
-                converted_lines.extend(batch_result)
-                done_lines += len(batch_result)
-                progress = done_lines / total_lines
+        if num_workers <= 1:
+            # Single-process path: small files or single-core machines
+            converted_lines = []
+            for idx, line in enumerate(lines, 1):
+                converted_lines.append(convert(line))
+                progress = idx / total_lines
                 filled = int(bar_width * progress)
                 bar = '█' * filled + '░' * (bar_width - filled)
-                print(
-                    f'\r  [{bar}] {done_lines}/{total_lines} lines '
-                    f'({progress:.0%})',
-                    end='', file=sys.stderr)
+                print(f'\r  [{bar}] {idx}/{total_lines} lines ({progress:.0%})',
+                      end='', file=sys.stderr)
+        else:
+            # Multi-process path: split lines into batches, one per worker
+            batch_size = (total_lines + num_workers - 1) // num_workers
+            batches = []
+            for start in range(0, total_lines, batch_size):
+                batches.append(
+                    (args.direction, lines[start:start + batch_size])
+                )
 
-    elapsed = time.time() - start_time
-    print(file=sys.stderr)  # newline after progress bar
+            converted_lines = []
+            done_lines = 0
+            with multiprocessing.Pool(processes=num_workers) as pool:
+                for batch_result in pool.imap(_convert_batch, batches):
+                    converted_lines.extend(batch_result)
+                    done_lines += len(batch_result)
+                    progress = done_lines / total_lines
+                    filled = int(bar_width * progress)
+                    bar = '█' * filled + '░' * (bar_width - filled)
+                    print(
+                        f'\r  [{bar}] {done_lines}/{total_lines} lines '
+                        f'({progress:.0%})',
+                        end='', file=sys.stderr)
 
-    result = ''.join(converted_lines)
+        elapsed = time.time() - start_time
+        print(file=sys.stderr)  # newline after progress bar
+        result = ''.join(converted_lines)
+        words = sum(len(line.split()) for line in lines)
+    else:
+        text = args.text or ''
+        total_chars = len(text)
+        total_lines = len(text.splitlines()) if text else 0
+        source_label = '<text>'
+
+        print(f'Direction:  {direction_label}', file=sys.stderr)
+        print(f'Input:      {source_label}', file=sys.stderr)
+        print(f'Output:     {args.output if args.output else "<stdout>"}',
+              file=sys.stderr)
+        print(f'Lines:      {total_lines}', file=sys.stderr)
+        print(f'Characters: {total_chars}', file=sys.stderr)
+        print('Workers:    1', file=sys.stderr)
+        print(file=sys.stderr)
+
+        start_time = time.time()
+        result = convert(text)
+        elapsed = time.time() - start_time
+        words = len(text.split())
+
+    is_text_input = args.text is not None and not args.input
 
     if args.output:
         with open(args.output, 'w', encoding='utf-8') as outfile:
             outfile.write(result)
     else:
         sys.stdout.write(result)
+        if is_text_input and not result.endswith('\n'):
+            sys.stdout.write('\n')
 
     # Speed statistics
     chars_per_sec = total_chars / elapsed if elapsed > 0 else 0
-    words = sum(len(line.split()) for line in lines)
     words_per_sec = words / elapsed if elapsed > 0 else 0
     print(file=sys.stderr)
-    print(f'Completed in {elapsed:.3f}s ({num_workers} workers)',
-          file=sys.stderr)
+    if args.input:
+        print(f'Completed in {elapsed:.3f}s ({num_workers} workers)',
+              file=sys.stderr)
+    else:
+        print(f'Completed in {elapsed:.3f}s (1 worker)', file=sys.stderr)
     print(f'Speed: {chars_per_sec:,.0f} chars/s | {words_per_sec:,.0f} words/s',
           file=sys.stderr)
 

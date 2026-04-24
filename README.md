@@ -128,8 +128,12 @@ adyghe-char-convert -i input.txt -o output.txt -d c2l
 # Latin to Cyrillic (file to stdout)
 adyghe-char-convert -i input.txt -d l2c
 
+# Convert a string passed directly on the command line
+adyghe-char-convert -t "гупшысэ" -d c2l
+
 # Options:
-#   -i, --input      Path to input text file (required)
+#   -t, --text       Input text string (mutually exclusive with -i)
+#   -i, --input      Path to input text file (mutually exclusive with -t)
 #   -o, --output     Path to output file (default: stdout)
 #   -d, --direction  c2l (Cyrillic→Latin) or l2c (Latin→Cyrillic) (required)
 ```
@@ -165,6 +169,7 @@ adyghe-num-convert -i input.txt -o output.txt
 | `capitalize(text, is_latin, is_cyrillic) -> str` | Capitalize first character |
 | `special_chars_to_english_chars(text: str) -> str` | Simplify accented Latin chars to ASCII |
 | `cyrillic_extra_chars_to_basic_chars(text: str) -> str` | Normalize Cyrillic character variants |
+| `sanitize_latin_text(text: str) -> str` | Strip characters outside the Latin Adyghe alphabet, collapse whitespace, and normalize stray punctuation |
 
 ### `AdigaNumberUtils`
 
@@ -191,6 +196,24 @@ adyghe-num-convert -i input.txt -o output.txt
 | Symbol postfix | `4%`, `804+` | Number converted, symbol preserved |
 | Roman numeral | `III`, `IV` | Converted to Arabic then to words |
 | Plain number | `42`, `1,000,000` | Full number conversion |
+
+## Stability
+
+This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+From `1.0.0` onward, the following are considered the public, stable API:
+
+- The `AdigaCharacterUtils` and `AdigaNumberUtils` classes re-exported from
+  the `adyghe_latin_utils` package (see `__all__` in
+  [`src/adyghe_latin_utils/__init__.py`](src/adyghe_latin_utils/__init__.py)).
+- The `adyghe-char-convert` and `adyghe-num-convert` command-line tools and
+  their documented flags.
+
+Breaking changes to any of the above will require a major version bump.
+Anything not listed here (internal modules, helper functions, private
+attributes prefixed with `_`, and exact conversion output for previously
+unhandled edge cases) is considered internal and may change in a minor or
+patch release. Known lossy conversions between the Cyrillic and Latin
+alphabets are documented in [`LIMITATIONS.md`](LIMITATIONS.md).
 
 ## Development
 
