@@ -5,6 +5,33 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-05-16
+
+### Fixed
+
+- **Roman numeral false positives in Adyghe words.** Roman numeral
+  lookbehind/lookahead boundaries previously only checked for ASCII letters
+  (`[a-zA-Z]`). Adyghe Latin characters such as `É`, `Ş`, `İ`, `'`, and `'`
+  (U+2019) fell outside this set, causing embedded letter sequences like
+  `IX` (in `FEŞ'IX`) and `MI` (in `KÉMIĞAW`) to be falsely detected as
+  Roman numerals and spuriously converted to Adyghe words.
+
+### Changed
+
+- Added `ADYGHE_LATIN_LETTER_CHARS` class-level constant to
+  `AdigaCharacterUtils` as the canonical source of truth for Adyghe Latin
+  word-letter boundaries. This covers `a-zA-Z` plus all Adyghe-special
+  Latin letters in both cases (`áçćéǵğḣıḱĺöṕşśšṫüź`,
+  `ÁÇĆÉǴĞḢİḰĹÖṔŞŚŠṪÜŹ`, `žŽǯǮ`) and all apostrophe variants
+  (`'`, `'`, `'`, `ʻ`, `ʼ`).
+
+- `AdigaNumberUtils` Roman numeral detection now imports and uses
+  `AdigaCharacterUtils.ADYGHE_LATIN_LETTER_CHARS` for its boundary check
+  instead of a hardcoded `[a-zA-Z]` class.
+
+- The `_LETTER` pattern in `AdigaNumberUtils` also gained U+2018 (`'`) and
+  U+2019 (`'`) for consistency with the boundary constant.
+
 ## [1.0.0] - 2026-04-24
 
 First stable release. The public API — the `AdigaCharacterUtils` and

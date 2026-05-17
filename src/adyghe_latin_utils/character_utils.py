@@ -8,6 +8,13 @@ import time
 
 class AdigaCharacterUtils:
     RECOGNIZED_LATIN_CHARS_PATTERN = re.compile(r"[^a-záçćéǵğḣıḱĺöṕşśšṫüź\',.;:\?\! ]")
+    ADYGHE_LATIN_LETTER_CHARS = (
+        r"[a-zA-Z"
+        r"áçćéǵğḣıḱĺöṕşśšṫüź"
+        r"ÁÇĆÉǴĞḢİḰĹÖṔŞŚŠṪÜŹ"
+        r"žŽǯǮ"
+        "\u2018\u2019" r"ʻʼ']"
+    )
 
     def __init__(self):
         # Cyrillic Allowed Chars:

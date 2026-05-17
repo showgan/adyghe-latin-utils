@@ -445,6 +445,24 @@ class TestRomanNumerals:
     def test_roman_numerals(self, text, expected):
         assert AdigaNumberUtils.convert_numbers_in_text(text) == expected
 
+    @pytest.mark.parametrize("text, expected", [
+        # Reported bugs: substrings that look like Roman numerals but are
+        # part of Adyghe words should not be converted.
+        # Both ASCII apostrophe (U+0027) and typographic (U+2019) forms.
+        ("YİĆASE DEŞXINIXER FEŞ'IX", "YİĆASE DEŞXINIXER FEŞ'IX"),
+        ("YİĆASE DEŞXINIXER FEŞ\u2019IX", "YİĆASE DEŞXINIXER FEŞ\u2019IX"),
+        ("ZİY YİGU KÉMİĞAW", "ZİY YİGU KÉMİĞAW"),
+        # Standalone Roman numerals should still convert when surrounded
+        # by spaces, even when Adyghe text is nearby.
+        ("Chapter IV is done", "Chapter pĺ'ı is done"),
+        ("I. Introduction", "zı Introduction"),
+        # Ensure existing standalone cases still pass.
+        ("XIV", "zıć pĺ'ı"),
+        ("III. Chapter", "şı Chapter"),
+    ])
+    def test_roman_numerals_no_false_positives(self, text, expected):
+        assert AdigaNumberUtils.convert_numbers_in_text(text) == expected
+
 
 # ============================================================
 # VOWEL INSERTION (postfix helper)

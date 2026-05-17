@@ -4,6 +4,8 @@ import sys
 import time
 from typing import Optional
 
+from adyghe_latin_utils.character_utils import AdigaCharacterUtils
+
 
 class AdigaNumberUtils:
     MAX_NUMBER = 1_000_000_000_000_000  # 10^15
@@ -36,7 +38,7 @@ class AdigaNumberUtils:
     # A NUM token: digits optionally with comma-thousands grouping
     _NUM = r'\d{1,3}(?:,\d{3})+|\d+'
     # Adyghe Latin letters (including special chars used in the language)
-    _LETTER = r"[a-zA-Zçćéğḣĺṫışžǯʻʼ'']"
+    _LETTER = r"[a-zA-Zçćéğḣĺṫışžǯʻʼ''" + "\u2018\u2019" + r"]"
 
     _ENHANCED_PATTERN = re.compile(
         r'(?:'
@@ -71,7 +73,7 @@ class AdigaNumberUtils:
         r'((?:' + _NUM + r')(?:[%+]|-(?=\s|$)))'
         r'|'
         # Group 11: Roman numerals with optional dot (2+ chars, or 1 char with dot)
-        r'(?<![a-zA-Z])([IVXLCDM]{2,}\.?|[IVXLCDM]\.)(?![a-zA-Z])'
+        r'(?<!' + AdigaCharacterUtils.ADYGHE_LATIN_LETTER_CHARS + r')([IVXLCDM]{2,}\.?|[IVXLCDM]\.)(?!' + AdigaCharacterUtils.ADYGHE_LATIN_LETTER_CHARS + r')'
         r'|'
         # Group 12: Plain or comma-separated number (existing)
         r'(' + _NUM + r')'
